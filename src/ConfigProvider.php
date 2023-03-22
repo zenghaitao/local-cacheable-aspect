@@ -9,23 +9,34 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
-namespace ZengStudio\LocalCacheableAspect;
+namespace ZenStudio\LocalCacheableAspect;
+
+use ZenStudio\LocalCacheableAspect\Contract\ILocalCacheStartCallBack;
 
 class ConfigProvider
 {
     public function __invoke(): array
     {
         return [
-            'dependencies' => [
-            ],
-            'commands' => [
-            ],
             'annotations' => [
                 'scan' => [
                     'paths' => [
                         __DIR__,
                     ],
                 ],
+            ],
+            'publish' => [
+                [
+                    'id' => 'config',
+                    'description' => 'The config for local cache aspect.',
+                    'source' => __DIR__ . '/../publish/local_cache.php',
+                    'destination' => BASE_PATH . '/config/autoload/local_cache.php',
+                ],
+            ],
+            'dependencies' => [
+                ILocalCacheStartCallBack::class => LocalCacheStartCallBack::class,
+            ],
+            'commands' => [
             ],
         ];
     }
