@@ -3,3 +3,6 @@
 composer.lock
 *.cache
 *.log
+.php-cs-fixer.php
+/phpunit.xml
+/.gitattributes
