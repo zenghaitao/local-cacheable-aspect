@@ -2,9 +2,17 @@
     "name": "zen-studio/local-cacheable-aspect",
     "type": "library",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "zenghaitao",
+            "email": "zeng08@gmail.com"
+        }
+    ],
     "keywords": [
         "php",
-        "hyperf"
+        "hyperf",
+        "hyperf cache",
+        "local cache"
     ],
     "description": "",
     "autoload": {
