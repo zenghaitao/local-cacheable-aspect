@@ -120,8 +120,6 @@ class LocalCacheableAspect extends AbstractAspect
     /**
      * @param CacheManager $manager
      * @param AnnotationManager $annotationManager
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
      */
     public function __construct(CacheManager $manager, AnnotationManager $annotationManager)
     {
@@ -167,7 +165,6 @@ class LocalCacheableAspect extends AbstractAspect
     /**
      * @param ProceedingJoinPoint $proceedingJoinPoint
      * @return mixed
-     * @throws Exception
      */
     public function process(ProceedingJoinPoint $proceedingJoinPoint)
     {
@@ -200,7 +197,6 @@ class LocalCacheableAspect extends AbstractAspect
      * @param string $group
      * @param ProceedingJoinPoint $proceedingJoinPoint
      * @return mixed
-     * @throws Exception
      */
     private function cacheable(string $key, string $group, ProceedingJoinPoint $proceedingJoinPoint)
     {
