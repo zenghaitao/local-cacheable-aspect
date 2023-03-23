@@ -16,9 +16,11 @@ use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Swoole\Server;
 use ZenStudio\LocalCacheableAspect\MemCache;
+use Hyperf\Di\Annotation\Aspect;
 
 /**
  * 切入Cacheable类生成本地缓存
+ * @Aspect
  */
 class LocalCacheableAspect extends AbstractAspect
 {
