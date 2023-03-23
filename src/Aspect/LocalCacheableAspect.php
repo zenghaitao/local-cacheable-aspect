@@ -24,9 +24,6 @@ use Hyperf\Di\Annotation\Aspect;
  */
 class LocalCacheableAspect extends AbstractAspect
 {
-    //缓存版本RedisKey
-    private string $redis_version;
-
     /**
      * @var CacheManager
      */
@@ -38,18 +35,24 @@ class LocalCacheableAspect extends AbstractAspect
     protected AnnotationManager $annotationManager;
 
     /**
-     * Cacheable的redis前缀
-     * @var string|mixed
-     */
-    private string $redis_prefix;
-
-    /**
      * 切入类
      * @var string[]
      */
     public $classes = [
         'Hyperf\Cache\Aspect\CacheableAspect::process',
     ];
+
+    /**
+     * 缓存版本RedisKey
+     * @var string
+     */
+    private string $redis_version;
+
+    /**
+     * Cacheable的redis前缀
+     * @var string|mixed
+     */
+    private string $redis_cache_prefix;
 
     /**
      * 默认存活时间
@@ -61,7 +64,7 @@ class LocalCacheableAspect extends AbstractAspect
      * 自动清理过期数据周期
      * @var int
      */
-    private int $cycle_time;
+    private int $cycle_time = 0;
 
     /**
      * 全局锁
@@ -91,7 +94,7 @@ class LocalCacheableAspect extends AbstractAspect
      * 过期时间
      * @var int
      */
-    private int $clear_time;
+    private int $clear_time = 0;
 
     /**
      * @var ContainerInterface
@@ -132,12 +135,15 @@ class LocalCacheableAspect extends AbstractAspect
         $this->Redis = $this->container->get(RedisFactory::class)->get($pool);
 
         $this->enable = (bool)$this->configs['enable'];
-        $this->redis_prefix = (string)$ConfigInterface->get('cache.default')['prefix'];
+        $this->redis_cache_prefix = (string)$ConfigInterface->get('cache.default')['prefix'];
         $this->redis_version = (string)$this->configs['redis.version_key'];
         $this->cycle_time = (int)$this->configs['cycle_time'];
         $this->default_ttl = (int)$this->configs['default_ttl'];
 
-        $this->clear_time = time() + $this->cycle_time;
+        if($this->cycle_time){
+            $this->clear_time = time() + $this->cycle_time;
+        }
+
         try {
             $Server = $this->container->get(Server::class);
             if (!empty($Server->MasterCache) && $Server->MasterCache instanceof MemCache) {
@@ -171,7 +177,7 @@ class LocalCacheableAspect extends AbstractAspect
         }
 
         //本地缓存进入清空周期
-        if (time() > $this->clear_time) {
+        if ($this->clear_time && time() > $this->clear_time) {
             $this->clearLocalCache();
         }
 
@@ -181,7 +187,7 @@ class LocalCacheableAspect extends AbstractAspect
             $method = $arguments['proceedingJoinPoint']->methodName;
             $arguments = $arguments['proceedingJoinPoint']->arguments['keys'];
             [$key, $ttl, $group, $annotation] = $this->annotationManager->getCacheableValue($className, $method, $arguments);
-            $key = $this->redis_prefix . $key;
+            $key = $this->redis_cache_prefix . $key;
             //自动重建缓存
             return $this->cacheable($key, $group, $proceedingJoinPoint);
         }
